@@ -2,6 +2,7 @@ import got from "got";
 import { URLSearchParams } from "url";
 
 export class PetController {
+  [x: string]: any;
   async getById(id: number | string) {
     const res = await got(`http://localhost/v2/pet/${id}`);
     return JSON.parse(res.body);

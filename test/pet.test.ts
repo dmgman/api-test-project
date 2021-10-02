@@ -5,12 +5,12 @@ import console, { Console } from "console";
 const pet = new PetController();
 
 describe("User can", () => {
-  it("get pet by id", async function () {
+  it("get pet by id", async () => {
     const response = await pet.getById(1);
     assert(response.id == 1, `Error found: ${response.id}, not: 1`);
   });
 
-  it("recive by status", async function () {
+  it("recive by status", async () => {
     let res = await pet.findByStatus("available");
     assert(res.length > 0);
 
@@ -28,15 +28,11 @@ describe("User can", () => {
     assert(!res.some((pet: any) => pet.status == "sold"));
   });
 
-  it("recive by tag", async function () {
+  it("recive by tag", async () => {
     const res = await pet.findByTags("tag1");
-    console.log(res)
+    const ln = res.length;
 
-    assert(res.lenght > 0);
-    assert(
-      res.every(
-        (pet: any) => pet.tags.some(
-        (tag: any) => tag.name == "tag1"))
-    );
+    assert(ln > 0, `respons length: ${ln}`);
+    assert(res.some((x: any) => x.tags.some((y: any) => y.name == "tag1")));
   });
 });
