@@ -10,7 +10,7 @@ describe("User can", () => {
     assert(response.id == 1, `Error found: ${response.id}, not: 1`);
   });
 
-  it("recive by status", async () => {
+  it("recive pet by status", async () => {
     let res = await pet.findByStatus("available");
     assert(res.length > 0);
 
@@ -28,11 +28,82 @@ describe("User can", () => {
     assert(!res.some((pet: any) => pet.status == "sold"));
   });
 
-  it("recive by tag", async () => {
+  it("recive pet by tag", async () => {
     const res = await pet.findByTags("tag1");
     const ln = res.length;
-
+    console.log(ln);
+    for (let index = 0; index < res.length; index++) {
+      console.log(res[index]);
+    }
     assert(ln > 0, `respons length: ${ln}`);
-    assert(res.some((x: any) => x.tags.some((y: any) => y.name == "tag1")));
+    assert(res.every((x: any) => x.tags.some((y: any) => y.name == "tag1")));
+  });
+
+  it("create, update, delete pet", async function () {
+    const petToCreate = {
+      category: {
+        id: 0,
+        name: "string",
+      },
+      name: "Cat",
+      photoUrls: ["http://test.com/image.jpg"],
+      tags: [
+        {
+          id: 0,
+          name: "string",
+        },
+      ],
+      status: "available",
+    };
+
+    const addedPet = await pet.addNew(petToCreate);
+
+    assert.deepEqual(
+      addedPet,
+      {
+        ...petToCreate,
+        id: addedPet.id,
+      },
+      `Expexted added pet to matched creation data`
+    );
+
+    const foundAddedPet = await pet.getById(addedPet.id);
+    assert.deepEqual(
+      foundAddedPet,
+      {
+        ...petToCreate,
+        id: addedPet.id,
+      },
+      `Expexted added pet to match creation data`
+    );
+
+    const newerPet = {
+      id: addedPet.id,
+      category: {
+        id: 1,
+        name: "string2",
+      },
+      name: "Dog",
+      photoUrls: ["http://test.com/image2.jpg"],
+      tags: [
+        {
+          id: 1,
+          name: "string2",
+        },
+      ],
+      status: "pending",
+    };
+
+    const updatedPet = await pet.update(newerPet);
+
+    assert.deepEqual(
+      newerPet,
+      updatedPet,
+      `Expexted updated pet to match updated data`
+    );
+
+
+    //add 404 asset error
+    await pet.deletePet(addedPet.id);
   });
 });
